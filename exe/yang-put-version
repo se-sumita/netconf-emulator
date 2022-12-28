@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+#=====================================================================
+# YANGファイル名にバージョンを付与する
+#=====================================================================
+def get_revision(path)
+  content = File.read(path)
+  if content =~ /revision\s+(")?(\d{4}\-\d{2}\-\d{2})(")?/
+    revision = $2
+    revision
+  else
+    STDERR.puts "not found revision in #{path}"
+    nil
+  end
+end
+
+if $PROGRAM_NAME == __FILE__
+  dir = ARGV.shift
+  if dir.nil?
+    STDERR.puts "usage: #{$PROGRAM_NAME} <yang-directory>"
+    exit 1
+  end
+
+  pattern = File.join(dir, '*.yang')
+
+  Dir.glob(pattern).each do |file|
+    if file =~ /^([^@]+)\.yang$/
+      yang = $1
+      revision = get_revision(file)
+      unless revision.nil?
+        cmd = "mv #{file} #{yang}@#{revision}.yang"
+        puts cmd
+        system(cmd)
+      end
+    else
+      STDERR.puts "skip [#{file}]"
+    end
+  end
+end

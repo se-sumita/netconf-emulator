@@ -1,0 +1,42 @@
+version: '3.4'
+
+networks:
+  sdn_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+      com.docker.network.bridge.name: sdn_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.20.30.0/24
+
+
+x-template-sample: &template-sample
+  build: sshd
+  environment:
+    - NETCONF_PORT=830
+    - NETCONF_USER=username
+    - NETCONF_PASSWORD=password
+
+
+services:
+  sample-01:
+    <<: *template-sample
+    volumes:
+      - ./devices/SAMPLE-01:/opt/work/data:rw
+      - ./initial-data/SAMPLE:/opt/work/initial-data:ro
+      - ./etc/SAMPLE:/opt/work/etc:ro
+      - ./exe:/opt/work/bin:ro
+      - ./lib:/opt/work/lib:ro
+    networks: { sdn_net: { ipv4_address: 10.20.30.41 } }
+
+  sample-02:
+    <<: *template-sample
+    volumes:
+      - ./devices/SAMPLE-01:/opt/work/data:rw
+      - ./initial-data/SAMPLE:/opt/work/initial-data:ro
+      - ./etc/SAMPLE:/opt/work/etc:ro
+      - ./exe:/opt/work/bin:ro
+      - ./lib:/opt/work/lib:ro
+    networks: { sdn_net: { ipv4_address: 10.20.30.42 } }

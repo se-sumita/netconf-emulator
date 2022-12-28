@@ -1,0 +1,4 @@
+hello: ../etc/hello.xml
+schema-dir: ../etc/schema
+datastore-dir: ../data/ds
+dump-dir: ../data/log

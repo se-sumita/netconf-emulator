@@ -1,0 +1,4 @@
+logger:
+  file: ../data/log/netconf.log
+  level: debug
+  datetime_format: "%Y-%m-%dT%H:%M:%S.%06N"

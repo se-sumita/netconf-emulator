@@ -1,0 +1,34 @@
+operation:
+  get-config:
+    class: GetConfig
+    sleep: [ 0, 100 ]
+  edit-config:
+    class: EditConfig
+    sleep: [ 0, 100 ]
+  lock:
+    rpc-reply: ok
+    sleep: 100
+  unlock:
+    rpc-reply: ok
+    sleep: 100
+  get:
+    class: Get
+    sleep: [ 0, 100 ]
+  close-session:
+    rpc-reply: ok
+    sleep: 100
+  kill-session:
+    rpc-reply:
+      rpc-error:
+        error-type: protocol
+        error-tag: operation-not-supported
+        error-serverity: error
+  commit:
+    class: Commit
+    sleep: [ 100, 200 ]
+  get-schema:
+    rpc-reply:
+      rpc-error:
+        error-type: protocol
+        error-tag: operation-not-supported
+        error-serverity: error

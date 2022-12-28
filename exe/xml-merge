@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+#=====================================================================
+# <get>で個別に収集したXMLファイルをマージする
+#=====================================================================
+require 'rexml/document'
+
+def pretty_xml(doc)
+  if doc.is_a?(String)
+    pretty_xml(REXML::Document.new(doc))
+  else
+    doc.context[:attribute_quote] = :quote
+    formatter = REXML::Formatters::Pretty.new #(0)
+    formatter.compact = true
+    o = StringIO.new
+    formatter.write(doc, o)
+    o.string
+  end
+end
+
+if $PROGRAM_NAME == __FILE__
+  dir = ARGV.shift
+  if dir.nil?
+    STDERR.puts "usage: #{$PROGRAM_NAME} <xml-directory>"
+    exit 1
+  end
+
+  pattern = File.join(dir, '*.xml')
+
+  top_str = <<EOS
+<?xml version="1.0" encoding="UTF-8"?> 
+<rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <data/>
+</rpc-reply>
+EOS
+  doc = REXML::Document.new(top_str)
+  top = doc.elements['/rpc-reply/data']
+
+  Dir.glob(pattern).each do |file|
+    obj = REXML::Document.new(File.read(file))
+    STDERR.puts "file=#{file}, xmlns=#{obj.root.attributes.get_attribute('xmlns')}, tag=#{obj.root.name}"
+    top.add(obj)
+  end
+  puts pretty_xml(doc)
+end
